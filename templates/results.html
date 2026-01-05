@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+{% block title %}Result Analytics{% endblock %}
+
+{% block content %}
+
+<!-- ================= Failure Distribution ================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-danger text-white">
+        Failure Distribution
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+            <tr>
+                <th>Category</th>
+                <th>No. of Students</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for f in failure_distribution %}
+            <tr>
+                <td>{{ f.Category }}</td>
+                <td>{{ f.Students }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ================= Failed Subjects Student-wise ================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning">
+        Failed Subjects – Student Wise
+    </div>
+    <div class="card-body">
+        {% if failed_subjects_by_student %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+            <tr>
+                <th>HTNO</th>
+                <th>No. of Failed Subjects</th>
+                <th>Failed Subject Names</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for f in failed_subjects_by_student %}
+            <tr>
+                <td>{{ f.HTNO }}</td>
+                <td>{{ f.Failed_Count }}</td>
+                <td>{{ f.Failed_Subjects }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-success fw-bold">No students failed in any subject.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ================= Subject-wise Pass Percentage ================= -->
+<!-- ================= Subject-wise Pass Percentage ================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+        Subject-wise Pass Percentage
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>S.No</th>
+                <th>Subject</th>
+                <th>Appeared</th>
+                <th>Passed</th>
+                <th>Failed</th>
+                <th>Pass %</th>
+                <th>Performance</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for s in subject_metrics %}
+            <tr>
+                <td>{{ s.SNo }}</td>
+                <td>{{ s.Subject }}</td>
+                <td>{{ s.Appeared }}</td>
+                <td class="text-success fw-semibold">{{ s.Passed }}</td>
+                <td class="text-danger fw-semibold">{{ s.Failed }}</td>
+                <td>{{ s["Pass %"] }}%</td>
+
+                <!-- Progress Bar -->
+                <td style="min-width:180px">
+                    <div class="progress" style="height: 18px;">
+                        <div
+                            class="progress-bar
+                            {% if s['Pass %'] >= 75 %}
+                                bg-success
+                            {% elif s['Pass %'] >= 50 %}
+                                bg-warning
+                            {% else %}
+                                bg-danger
+                            {% endif %}"
+                            role="progressbar"
+                            style="width: {{ s['Pass %'] }}%;"
+                        >
+                            {{ s["Pass %"] }}%
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ================= Top 5 Overall Ranks ================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white">
+        Top 5 Overall Ranks (SGPA Based)
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+            <tr>
+                <th>Rank</th>
+                <th>HTNO</th>
+                <th>SGPA</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for r in rank_list %}
+            <tr>
+                <td>{{ r.Rank }}</td>
+                <td>{{ r.HTNO }}</td>
+                <td>{{ r.SGPA }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ================= Top 5 Subject-wise Ranks ================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">
+        Top 5 Subject-wise Ranks
+    </div>
+    <div class="card-body">
+        {% for subject, students in subject_wise_top5.items() %}
+        <h6 class="fw-bold mt-3">{{ subject }}</h6>
+        <table class="table table-bordered table-sm mb-4">
+            <thead class="table-light">
+            <tr>
+                <th>Rank</th>
+                <th>HTNO</th>
+                <th>Total Marks</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in students %}
+            <tr>
+                <td>{{ s.Rank }}</td>
+                <td>{{ s.HTNO }}</td>
+                <td>{{ s.TOTALMARKS }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ================= Student Metrics (LAST) ================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white">
+        Student Details (SGPA / CGPA / Detention)
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+            <tr>
+                <th>S.No</th>
+                <th>HTNO</th>
+                <th>Passed</th>
+                <th>Failed</th>
+                <th>SGPA</th>
+                <th>CGPA</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in student_metrics %}
+            <tr class="{% if s.Status == 'DETAINED' %}table-danger{% endif %}">
+                <td>{{ loop.index }}</td>
+                <td>{{ s.HTNO }}</td>
+                <td>{{ s.Passed }}</td>
+                <td>{{ s.Failed }}</td>
+                <td>{{ s.SGPA }}</td>
+                <td>{{ s.CGPA }}</td>
+                <td class="fw-bold">
+                    {% if s.Status == 'DETAINED' %}
+                        <span class="text-danger">{{ s.Status }}</span>
+                    {% else %}
+                        <span class="text-success">{{ s.Status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- ================= Subject-wise Charts ================= -->
+<div class="row mb-4">
+
+    <!-- BAR CHART -->
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>Subject-wise Pass Percentage (Bar Chart)</span>
+                <button class="btn btn-light btn-sm" onclick="downloadChart('passBarChart','Subject_Pass_Percentage_Bar')">
+                    Download Image
+                </button>
+            </div>
+            <div class="card-body">
+                <canvas id="passBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIE CHART -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <span>Pass % Distribution (Pie Chart)</span>
+                <button class="btn btn-light btn-sm" onclick="downloadChart('passPieChart','Subject_Pass_Percentage_Pie')">
+                    Download Image
+                </button>
+            </div>
+            <div class="card-body">
+                <canvas id="passPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<button class="btn btn-outline-dark mb-3" onclick="printPage()">
+    🖨️ Print Full Report
+</button>
+<!-- ================= Footer Actions ================= -->
+<div class="text-end">
+    <a href="/search" class="btn btn-outline-primary me-2">Search Student</a>
+    <a href="/download" class="btn btn-outline-success">Download Excel</a>
+</div>
+
+<script>
+const subjects = [
+    {% for s in subject_metrics %}
+        "{{ s.Subject }}",
+    {% endfor %}
+];
+
+const passPercentages = [
+    {% for s in subject_metrics %}
+        {{ s["Pass %"] }},
+    {% endfor %}
+];
+
+const barChart = new Chart(document.getElementById("passBarChart"), {
+    type: "bar",
+    data: {
+        labels: subjects,
+        datasets: [{
+            label: "Pass Percentage (%)",
+            data: passPercentages,
+            backgroundColor: "rgba(54, 162, 235, 0.7)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            datalabels: {
+                anchor: "end",
+                align: "top",
+                formatter: value => value + "%",
+                font: {
+                    weight: "bold"
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
+// PIE CHART INSTANCE
+const pieChart = new Chart(document.getElementById("passPieChart"), {
+    type: "pie",
+    data: {
+        labels: subjects,
+        datasets: [{
+            data: passPercentages,
+            backgroundColor: [
+                "#28a745", "#17a2b8", "#ffc107",
+                "#dc3545", "#6f42c1", "#fd7e14",
+                "#20c997", "#0d6efd"
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            datalabels: {
+                color: "#fff",
+                formatter: value => value + "%",
+                font: {
+                    weight: "bold",
+                    size: 12
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+</script>
+
+<script>
+function downloadChart(canvasId, filename) {
+    const canvas = document.getElementById(canvasId);
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png", 1.0);
+    link.download = filename + ".png";
+    link.click();
+}
+</script>
+
+<script>
+function printPage() {
+    window.print();
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Student Search{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                Student Search
+            </div>
+
+            <div class="card-body">
+                <form method="POST">
+
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            name="htno"
+                            class="form-control"
+                            placeholder="Enter Hall Ticket Number"
+                            required
+                        >
+                        <button type="submit" class="btn btn-success">
+                            Search
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% if data %}
+<div class="card shadow-sm">
+    <div class="card-header bg-info text-white">
+        Results for {{ htno }}
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+            <tr>
+                <th>S.No</th>
+                <th>Subject</th>
+                <th>Total Marks</th>
+                <th>Grade</th>
+                <th>Result</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for row in data %}
+            {% set grade = row.GRADE | upper %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.SUBJECT_NAME }}</td>
+                <td>{{ row.TOTALMARKS }}</td>
+                <td>
+                    <span class="badge bg-secondary">{{ grade }}</span>
+                </td>
+                <td>
+                    {% if grade in ["O", "A+", "A", "B+", "B", "C"] %}
+                        <span class="badge bg-success">PASS</span>
+                    {% else %}
+                        <span class="badge bg-danger">FAIL</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% elif htno %}
+<div class="alert alert-warning text-center">
+    No records found for Hall Ticket No: <b>{{ htno }}</b>
+</div>
+{% endif %}
+
+{% endblock %}

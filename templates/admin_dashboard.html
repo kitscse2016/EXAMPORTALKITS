@@ -1,0 +1,13 @@
+<h2>Admin Dashboard</h2>
+<form method="post">
+  Add Course <input name="course" required>
+  <button>Add</button>
+</form>
+
+<ul>
+{% for c in courses %}
+<li>{{c[0]}}</li>
+{% endfor %}
+</ul>
+
+<a href="/logout">Logout</a>

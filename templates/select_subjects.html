@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Select Optional Subjects{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    Select Optional Subjects
+                    <small class="d-block text-muted">(40% Total Marks Rule)</small>
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" action="/process" id="subjectForm">
+
+                    <!-- SUBJECT LIST -->
+                    <div class="row">
+                        {% for sno, subject in subjects %}
+                        <div class="col-md-6 mb-2">
+                            <div class="form-check subject-box p-2 rounded border">
+                                <input
+                                    class="form-check-input subject-checkbox"
+                                    type="checkbox"
+                                    name="optional_subjects"
+                                    value="{{ subject }}"
+                                    id="sub{{ sno }}"
+                                >
+                                <label class="form-check-label fw-semibold" for="sub{{ sno }}">
+                                    {{ sno }}. {{ subject }}
+                                </label>
+
+                                <span class="badge bg-success ms-2 d-none selected-badge">
+                                    Selected
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <hr>
+
+                    <!-- BUTTON -->
+                    <div class="d-grid mt-3">
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-lg"
+                            id="generateBtn"
+                        >
+                            Generate Result Analytics
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="card-footer text-muted small">
+                Selected subjects will follow 40% total marks pass criteria.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= JS FOR UX BEHAVIOR ================= -->
+<script>
+document.querySelectorAll(".subject-checkbox").forEach(cb => {
+    cb.addEventListener("change", function () {
+        const container = this.closest(".subject-box");
+        const badge = container.querySelector(".selected-badge");
+
+        if (this.checked) {
+            container.classList.add("bg-light", "border-success");
+            badge.classList.remove("d-none");
+        } else {
+            container.classList.remove("bg-light", "border-success");
+            badge.classList.add("d-none");
+        }
+    });
+});
+
+document.getElementById("subjectForm").addEventListener("submit", function () {
+    const btn = document.getElementById("generateBtn");
+    btn.disabled = true;
+    btn.innerHTML = "Processing... Please wait";
+});
+</script>
+
+{% endblock %}

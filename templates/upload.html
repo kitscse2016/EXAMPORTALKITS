@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Marks{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Upload Marks Excel File</h5>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" action="/upload" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Excel File (.xlsx)</label>
+                        <input type="file" name="file" class="form-control" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            Upload & Process
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="card-footer text-muted small">
+                Ensure the file follows the prescribed marks format.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
